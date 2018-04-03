@@ -112,6 +112,12 @@ export class Walker {
 
     // For every prod dep
     for (const moduleName in pJ.dependencies) {
+      // npm decides it's a funny thing to put optioanl dependencies in the "dependencies" section
+      // after install, because that makes perfect sense
+      if (moduleName in pJ.optionalDependencies) {
+        d(`found ${moduleName} in prod deps of ${modulePath} but it is also marked optional`);
+        continue;
+      }
       await this.walkDependenciesForModuleInModule(
         moduleName,
         modulePath,
@@ -156,7 +162,7 @@ export class Walker {
         resolve(this.modules);
       });
     } else {
-      d('tree walk in progress already, waiting for existing walk to complete');
+      d('tree walk in progress / completed already, waiting for existing walk to complete');
     }
     return await this.cache;
   }
