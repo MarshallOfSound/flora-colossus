@@ -33,4 +33,11 @@ describe('Walker', () => {
   it('should locate a dep of a dev dep that is also a top level prod dep as a prod dep', () => {
     expect(dep('debug')).to.have.property('depType', DepType.PROD);
   });
+
+  it('should locate a dep of a dev dep that is optional as a dev_optional dep', function () {
+    if (process.platform !== 'darwin') {
+      this.skip();
+    }
+    expect(dep('fsevents')).to.have.property('depType', DepType.DEV_OPTIONAL);
+  });
 });

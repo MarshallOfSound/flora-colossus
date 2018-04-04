@@ -10,7 +10,7 @@ describe('depTypes', () => {
           .map(key => DepType[key])
           .filter(value => typeof value === 'number')
           .length
-      ).to.equal(4);
+      ).to.equal(5);
     });
   });
 
@@ -40,8 +40,10 @@ describe('depTypes', () => {
     });
 
     // THIS IS REQUIRED BEHAVIOR, DO NOT CHANGE
-    it('should mark optional deps of dev deps as dev deps', () => {
-      expect(childDepType(DepType.DEV, DepType.OPTIONAL)).to.equal(DepType.DEV);
+    // For future context, this is just so we don't leave around optional transitive
+    // deps.  Using dev_optional is :ok: because it ensures that we don't keep them
+    it('should mark optional deps of dev deps as dev_optional deps', () => {
+      expect(childDepType(DepType.DEV, DepType.OPTIONAL)).to.equal(DepType.DEV_OPTIONAL);
     });
 
     it('should mark deps of the root project as their native dep type', () => {
