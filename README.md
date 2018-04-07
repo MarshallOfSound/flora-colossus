@@ -39,5 +39,5 @@ const walker = new Walker(modulePath);
 Returns `Promise<Module[]>`
 
 Will walk your entire node_modules tree reporting back an array of "modules", each
-module has a "path", "name" and "depType".  See the typescript definition file
+module has a "path", "name" and "relationship".  See the typescript definition file
 for more information.
