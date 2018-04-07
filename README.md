@@ -19,6 +19,7 @@ import { DepType } from 'flora-colossus';
 // DepType.PROD --> Production dependency
 // DepType.OPTIONAL --> Optional dependency
 // DepType.DEV --> Development dependency
+// DepType.DEV_OPTIONAL --> Optional dependency of a development dependency
 // DepType.ROOT --> The root module
 ```
 

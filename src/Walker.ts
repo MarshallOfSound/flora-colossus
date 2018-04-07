@@ -65,7 +65,7 @@ export class Walker {
       }
     }
     // If we can't find it the install is probably buggered
-    if (!discoveredPath && depType !== DepType.OPTIONAL) {
+    if (!discoveredPath && depType !== DepType.OPTIONAL && depType !== DepType.DEV_OPTIONAL) {
       throw new Error(
         `Failed to locate module "${moduleName}" from "${modulePath}"
 
@@ -112,7 +112,7 @@ export class Walker {
 
     // For every prod dep
     for (const moduleName in pJ.dependencies) {
-      // npm decides it's a funny thing to put optioanl dependencies in the "dependencies" section
+      // npm decides it's a funny thing to put optional dependencies in the "dependencies" section
       // after install, because that makes perfect sense
       if (moduleName in pJ.optionalDependencies) {
         d(`found ${moduleName} in prod deps of ${modulePath} but it is also marked optional`);
