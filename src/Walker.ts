@@ -3,6 +3,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 
 import { DepType, depTypeGreater, childDepType } from './depTypes';
+import { NativeModuleType } from './nativeModuleTypes';
 
 export type VersionRange = string;
 export interface PackageJSON {
@@ -14,6 +15,7 @@ export interface PackageJSON {
 export interface Module {
   path: string;
   depType: DepType;
+  nativeModuleType: NativeModuleType,
   name: string;
 }
 
@@ -78,6 +80,15 @@ export class Walker {
     }
   }
 
+  private async detectNativeModuleType(modulePath: string, pJ: PackageJSON): Promise<NativeModuleType> {
+    if (pJ.dependencies['prebuild-install']) {
+      return NativeModuleType.PREBUILD
+    } else if (await fs.pathExists(path.join(modulePath, 'binding.gyp'))) {
+      return NativeModuleType.NODE_GYP
+    }
+    return NativeModuleType.NONE
+  }
+
   private async walkDependenciesForModule(modulePath: string, depType: DepType) {
     d('walk reached:', modulePath, ' Type is:', DepType[depType]);
     // We have already traversed this module
@@ -106,6 +117,7 @@ export class Walker {
     this.walkHistory.add(modulePath);
     this.modules.push({
       depType,
+      nativeModuleType: await this.detectNativeModuleType(modulePath, pJ),
       path: modulePath,
       name: pJ.name,
     });
