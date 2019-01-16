@@ -23,8 +23,8 @@
     "chai": "^4.2.0",
     "mocha": "^5.2.0",
     "sane": "^4.0.2",
-    "ts-node": "^4.1.0",
-    "typescript": "^2.4.2"
+    "ts-node": "^7.0.1",
+    "typescript": "^3.2.2"
   },
   "dependencies": {
     "debug": "^4.1.1",
