@@ -1,0 +1,10 @@
+{
+  "name": "native_modules",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "native-uses-node-gyp": "0.0.0",
+    "native-uses-prebuild": "0.0.0",
+    "pure-javascript-module": "0.0.0"
+  }
+}
