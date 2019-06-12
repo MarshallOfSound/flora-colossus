@@ -7,6 +7,7 @@
   "scripts": {
     "build": "tsc",
     "prepublish": "npm run build",
+    "pretest": "cd test/fixtures/xml2js && yarn --frozen-lockfile",
     "test": "mocha --require ts-node/register test/*_spec.ts"
   },
   "keywords": [
@@ -22,7 +23,7 @@
     "@types/mocha": "^5.2.5",
     "chai": "^4.2.0",
     "mocha": "^5.2.0",
-    "sane": "^4.0.2",
+    "sane": "^2.5.0",
     "ts-node": "^7.0.1",
     "typescript": "^3.2.2"
   },

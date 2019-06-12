@@ -137,6 +137,15 @@ export class Walker {
       );
     }
 
+    // For every optional dep
+    for (const moduleName in pJ.optionalDependencies) {
+      await this.walkDependenciesForModuleInModule(
+        moduleName,
+        modulePath,
+        childDepType(depType, DepType.OPTIONAL),
+      );
+    }
+
     // For every dev dep, but only if we are in the root module
     if (depType === DepType.ROOT) {
       d('we\'re still at the beginning, walking down the dev route');
@@ -147,15 +156,6 @@ export class Walker {
           childDepType(depType, DepType.DEV),
         );
       }
-    }
-
-    // For every optional dep
-    for (const moduleName in pJ.optionalDependencies) {
-      await this.walkDependenciesForModuleInModule(
-        moduleName,
-        modulePath,
-        childDepType(depType, DepType.OPTIONAL),
-      );
     }
   }
 
