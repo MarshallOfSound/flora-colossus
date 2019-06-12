@@ -44,6 +44,7 @@ describe('Walker', () => {
     it('should locate a dep of a dev dep that is optional as a dev_optional dep', function () {
       if (process.platform !== 'darwin') {
         this.skip();
+        return;
       }
       expect(dep('fsevents')).to.have.property('depType', DepType.DEV_OPTIONAL);
     });
@@ -64,6 +65,29 @@ describe('Walker', () => {
 
     it('should detect a module that is not native', () => {
       expect(dep('pure-javascript-module')).to.have.property('nativeModuleType', NativeModuleType.NONE);
+    });
+  });
+
+  describe('conflicting optional and dev dependencies (xml2js)', () => {
+    const deepIdentifier = path.join('xml2js', 'node_modules', 'plist');
+
+    beforeEach(async () => {
+      modules = await buildWalker(path.join(__dirname, 'fixtures', 'xml2js'));
+    });
+
+    it('should detect multiple instances of the same module', () => {
+      const xmlBuilderModules = modules.filter(m => m.name === 'xmlbuilder');
+      expect(xmlBuilderModules).to.have.lengthOf(2);
+    });
+
+    it('should detect the hoisted and unhoisted instances correctly as optional/dev', () => {
+      const xmlBuilderModules = modules.filter(m => m.name === 'xmlbuilder');
+      // Kept deep by plist
+      const expectedDev = xmlBuilderModules.find(m => m.path.includes(deepIdentifier));
+      // Hoisted for xml2js
+      const expectedOptional = xmlBuilderModules.find(m => !m.path.includes(deepIdentifier));
+      expect(expectedDev).to.have.property('depType', DepType.DEV);
+      expect(expectedOptional).to.have.property('depType', DepType.OPTIONAL);
     });
   });
 });
