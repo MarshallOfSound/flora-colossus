@@ -13,10 +13,11 @@ async function buildWalker(modulePath: string): Promise<Module[]> {
 describe('Walker', () => {
   let modules: Module[];
   const thisPackageDir = path.resolve(__dirname, '..');
-  const dep = (depName: string) => modules.find(module => module.name === depName);
+  const dep = (depName: string): Module | undefined =>
+    modules.find(module => module.name === depName);
 
   it('should save root directory correctly', () => {
-    const walker = new Walker(thisPackageDir)
+    const walker = new Walker(thisPackageDir);
     expect(walker.getRootModule()).to.equal(thisPackageDir);
   });
 
@@ -41,7 +42,7 @@ describe('Walker', () => {
       expect(dep('debug')).to.have.property('depType', DepType.PROD);
     });
 
-    it('should locate a dep of a dev dep that is optional as a dev_optional dep', function () {
+    it('should locate a dep of a dev dep that is optional as a dev_optional dep', function() {
       if (process.platform !== 'darwin') {
         this.skip();
         return;
@@ -52,19 +53,30 @@ describe('Walker', () => {
 
   describe('nativeModuleType', () => {
     beforeEach(async () => {
-      modules = await buildWalker(path.join(__dirname, 'fixtures', 'native_modules'));
+      modules = await buildWalker(
+        path.join(__dirname, 'fixtures', 'native_modules')
+      );
     });
 
     it('should detect a module that uses prebuild', () => {
-      expect(dep('native-uses-prebuild')).to.have.property('nativeModuleType', NativeModuleType.PREBUILD);
+      expect(dep('native-uses-prebuild')).to.have.property(
+        'nativeModuleType',
+        NativeModuleType.PREBUILD
+      );
     });
 
     it('should detect a module that uses node-gyp', () => {
-      expect(dep('native-uses-node-gyp')).to.have.property('nativeModuleType', NativeModuleType.NODE_GYP);
+      expect(dep('native-uses-node-gyp')).to.have.property(
+        'nativeModuleType',
+        NativeModuleType.NODE_GYP
+      );
     });
 
     it('should detect a module that is not native', () => {
-      expect(dep('pure-javascript-module')).to.have.property('nativeModuleType', NativeModuleType.NONE);
+      expect(dep('pure-javascript-module')).to.have.property(
+        'nativeModuleType',
+        NativeModuleType.NONE
+      );
     });
   });
 
@@ -83,9 +95,13 @@ describe('Walker', () => {
     it('should detect the hoisted and unhoisted instances correctly as optional/dev', () => {
       const xmlBuilderModules = modules.filter(m => m.name === 'xmlbuilder');
       // Kept deep by plist
-      const expectedDev = xmlBuilderModules.find(m => m.path.includes(deepIdentifier));
+      const expectedDev = xmlBuilderModules.find(m =>
+        m.path.includes(deepIdentifier)
+      );
       // Hoisted for xml2js
-      const expectedOptional = xmlBuilderModules.find(m => !m.path.includes(deepIdentifier));
+      const expectedOptional = xmlBuilderModules.find(
+        m => !m.path.includes(deepIdentifier)
+      );
       expect(expectedDev).to.have.property('depType', DepType.DEV);
       expect(expectedOptional).to.have.property('depType', DepType.OPTIONAL);
     });

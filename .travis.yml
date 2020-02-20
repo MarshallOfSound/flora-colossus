@@ -10,4 +10,6 @@ cache: yarn
 env:
   - YARN_GPG=no
 
-script: yarn test
+script:
+- yarn lint
+- yarn test

@@ -8,8 +8,7 @@ describe('depTypes', () => {
       expect(
         Object.keys(DepType)
           .map(key => DepType[key])
-          .filter(value => typeof value === 'number')
-          .length
+          .filter(value => typeof value === 'number').length
       ).to.equal(5);
     });
   });
@@ -20,9 +19,15 @@ describe('depTypes', () => {
     });
 
     it('should mark children of optional deps as optional', () => {
-      expect(childDepType(DepType.OPTIONAL, DepType.DEV)).to.equal(DepType.OPTIONAL);
-      expect(childDepType(DepType.OPTIONAL, DepType.PROD)).to.equal(DepType.OPTIONAL);
-      expect(childDepType(DepType.OPTIONAL, DepType.OPTIONAL)).to.equal(DepType.OPTIONAL);
+      expect(childDepType(DepType.OPTIONAL, DepType.DEV)).to.equal(
+        DepType.OPTIONAL
+      );
+      expect(childDepType(DepType.OPTIONAL, DepType.PROD)).to.equal(
+        DepType.OPTIONAL
+      );
+      expect(childDepType(DepType.OPTIONAL, DepType.OPTIONAL)).to.equal(
+        DepType.OPTIONAL
+      );
     });
 
     it('should mark non-optional deps of prod deps as prod', () => {
@@ -31,7 +36,9 @@ describe('depTypes', () => {
     });
 
     it('should mark optional deps of prod deps as optional', () => {
-      expect(childDepType(DepType.PROD, DepType.OPTIONAL)).to.equal(DepType.OPTIONAL);
+      expect(childDepType(DepType.PROD, DepType.OPTIONAL)).to.equal(
+        DepType.OPTIONAL
+      );
     });
 
     it('should mark non-optional deps of dev deps as dev', () => {
@@ -43,12 +50,16 @@ describe('depTypes', () => {
     // For future context, this is just so we don't leave around optional transitive
     // deps.  Using dev_optional is :ok: because it ensures that we don't keep them
     it('should mark optional deps of dev deps as dev_optional deps', () => {
-      expect(childDepType(DepType.DEV, DepType.OPTIONAL)).to.equal(DepType.DEV_OPTIONAL);
+      expect(childDepType(DepType.DEV, DepType.OPTIONAL)).to.equal(
+        DepType.DEV_OPTIONAL
+      );
     });
 
     it('should mark deps of the root project as their native dep type', () => {
       expect(childDepType(DepType.ROOT, DepType.DEV)).to.equal(DepType.DEV);
-      expect(childDepType(DepType.ROOT, DepType.OPTIONAL)).to.equal(DepType.OPTIONAL);
+      expect(childDepType(DepType.ROOT, DepType.OPTIONAL)).to.equal(
+        DepType.OPTIONAL
+      );
       expect(childDepType(DepType.ROOT, DepType.PROD)).to.equal(DepType.PROD);
     });
   });
