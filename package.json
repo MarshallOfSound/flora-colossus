@@ -5,8 +5,8 @@
   "author": "Samuel Attard",
   "license": "MIT",
   "keywords": [
-    "prune",
-    "production"
+    "node_modules",
+    "walker"
   ],
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
