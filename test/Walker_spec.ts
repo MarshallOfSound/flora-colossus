@@ -34,7 +34,7 @@ describe('Walker', () => {
     });
 
     it('should locate a dep of a dev dep as a dev dep', () => {
-      expect(dep('commander')).to.have.property('depType', DepType.DEV);
+      expect(dep('yargs')).to.have.property('depType', DepType.DEV);
     });
 
     it('should locate a dep of a dev dep that is also a top level prod dep as a prod dep', () => {

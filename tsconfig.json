@@ -14,10 +14,10 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "pretty": true,
-    "target": "ES5",
+    "target": "es2018",
     "outDir": "lib",
     "lib":[
-      "es2015"
+      "es2018"
     ]
   },
   "formatCodeOptions": {
