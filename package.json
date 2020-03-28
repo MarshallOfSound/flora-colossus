@@ -38,7 +38,7 @@
     "husky": "^4.2.1",
     "lint-staged": "^10.0.7",
     "mocha": "^7.0.1",
-    "prettier": "^1.19.1",
+    "prettier": "^2.0.2",
     "prettier-eslint-cli": "^5.0.0",
     "sane": "^4.1.0",
     "ts-node": "^8.6.2",

@@ -115,7 +115,7 @@ export class Walker {
       d('already walked this route');
       // Find the existing module reference
       const existingModule = this.modules.find(
-        module => module.path === modulePath
+        (module) => module.path === modulePath
       ) as Module;
       // If the depType we are traversing with now is higher than the
       // last traversal then update it (prod superseeds dev for instance)
@@ -142,7 +142,7 @@ export class Walker {
       depType,
       nativeModuleType: await this.detectNativeModuleType(modulePath, pJ),
       path: modulePath,
-      name: pJ.name
+      name: pJ.name,
     });
 
     // For every prod dep

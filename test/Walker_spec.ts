@@ -14,7 +14,7 @@ describe('Walker', () => {
   let modules: Module[];
   const thisPackageDir = path.resolve(__dirname, '..');
   const dep = (depName: string): Module | undefined =>
-    modules.find(module => module.name === depName);
+    modules.find((module) => module.name === depName);
 
   it('should save root directory correctly', () => {
     const walker = new Walker(thisPackageDir);
@@ -42,7 +42,7 @@ describe('Walker', () => {
       expect(dep('debug')).to.have.property('depType', DepType.PROD);
     });
 
-    it('should locate a dep of a dev dep that is optional as a dev_optional dep', function() {
+    it('should locate a dep of a dev dep that is optional as a dev_optional dep', function () {
       if (process.platform !== 'darwin') {
         this.skip();
         return;
@@ -88,19 +88,19 @@ describe('Walker', () => {
     });
 
     it('should detect multiple instances of the same module', () => {
-      const xmlBuilderModules = modules.filter(m => m.name === 'xmlbuilder');
+      const xmlBuilderModules = modules.filter((m) => m.name === 'xmlbuilder');
       expect(xmlBuilderModules).to.have.lengthOf(2);
     });
 
     it('should detect the hoisted and unhoisted instances correctly as optional/dev', () => {
-      const xmlBuilderModules = modules.filter(m => m.name === 'xmlbuilder');
+      const xmlBuilderModules = modules.filter((m) => m.name === 'xmlbuilder');
       // Kept deep by plist
-      const expectedDev = xmlBuilderModules.find(m =>
+      const expectedDev = xmlBuilderModules.find((m) =>
         m.path.includes(deepIdentifier)
       );
       // Hoisted for xml2js
       const expectedOptional = xmlBuilderModules.find(
-        m => !m.path.includes(deepIdentifier)
+        (m) => !m.path.includes(deepIdentifier)
       );
       expect(expectedDev).to.have.property('depType', DepType.DEV);
       expect(expectedOptional).to.have.property('depType', DepType.OPTIONAL);

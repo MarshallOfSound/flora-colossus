@@ -3,7 +3,7 @@ export enum DepType {
   DEV,
   OPTIONAL,
   DEV_OPTIONAL,
-  ROOT
+  ROOT,
 }
 
 export const depTypeGreater = (
