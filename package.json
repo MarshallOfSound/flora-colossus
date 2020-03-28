@@ -81,7 +81,7 @@
     "pre-commit": "lint-staged"
   },
   "lint-staged": {
-    "*.{json,md}": "prettier --write",
+    "*.{json,md,yml}": "prettier --write",
     "*.ts": [
       "prettier --write",
       "eslint --fix"
