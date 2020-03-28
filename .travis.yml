@@ -4,12 +4,12 @@ os:
   - osx
   - windows
 node_js:
-  - "10"
-  - "12"
+  - '10'
+  - '12'
 cache: yarn
 env:
   - YARN_GPG=no
 
 script:
-- yarn lint
-- yarn test
+  - yarn lint
+  - yarn test
