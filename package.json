@@ -12,7 +12,7 @@
   "typings": "lib/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "lint": "eslint --ext .ts .",
+    "lint": "prettier --check . && eslint --ext .ts .",
     "prepare": "npm run build",
     "pretest": "cd test/fixtures/xml2js && yarn --frozen-lockfile",
     "test": "mocha --require ts-node/register test/*_spec.ts"
@@ -39,7 +39,6 @@
     "lint-staged": "^10.0.7",
     "mocha": "^7.0.1",
     "prettier": "^2.0.2",
-    "prettier-eslint-cli": "^5.0.0",
     "sane": "^4.1.0",
     "ts-node": "^8.6.2",
     "typescript": "^3.2.2"
@@ -82,8 +81,11 @@
     "pre-commit": "lint-staged"
   },
   "lint-staged": {
-    "*.json": "prettier --write",
-    "*.ts": "prettier-eslint --write"
+    "*.{json,md}": "prettier --write",
+    "*.ts": [
+      "prettier --write",
+      "eslint --fix"
+    ]
   },
   "prettier": {
     "singleQuote": true
