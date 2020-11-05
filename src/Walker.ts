@@ -51,7 +51,7 @@ export class Walker {
   }
 
   private async walkDependenciesForModuleInModule(moduleName: string, modulePath: string, depType: DepType) {
-    let testPath = modulePath;
+    let testPath = await fs.realpath(modulePath);
     let discoveredPath: string | null = null;
     let lastRelative: string | null = null;
     // Try find it while searching recursively up the tree
