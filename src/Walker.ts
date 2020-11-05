@@ -25,6 +25,7 @@ export class Walker {
   private rootModule: string;
   private modules: Module[];
   private walkHistory: Set<string> = new Set();
+  private realPaths: Map<string, string> = new Map();
 
   constructor(modulePath: string) {
     if (!modulePath || typeof modulePath !== 'string') {
@@ -51,7 +52,11 @@ export class Walker {
   }
 
   private async walkDependenciesForModuleInModule(moduleName: string, modulePath: string, depType: DepType) {
-    let testPath = await fs.realpath(modulePath);
+    let testPath = this.realPaths.get(modulePath);
+    if (!testPath) {
+      testPath = await fs.realpath(modulePath);
+      this.realPaths.set(modulePath, testPath);
+    }
     let discoveredPath: string | null = null;
     let lastRelative: string | null = null;
     // Try find it while searching recursively up the tree
