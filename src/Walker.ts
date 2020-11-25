@@ -1,6 +1,7 @@
 import * as debug from 'debug';
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import * as process from 'process';
 
 import { DepType, depTypeGreater, childDepType } from './depTypes';
 import { NativeModuleType } from './nativeModuleTypes';
@@ -25,6 +26,7 @@ export class Walker {
   private rootModule: string;
   private modules: Module[];
   private walkHistory: Set<string> = new Set();
+  private ignoreDevDependencies: boolean;
 
   constructor(modulePath: string) {
     if (!modulePath || typeof modulePath !== 'string') {
@@ -32,6 +34,7 @@ export class Walker {
     }
     d(`creating walker with rootModule=${modulePath}`);
     this.rootModule = modulePath;
+    this.ignoreDevDependencies = process.env.WALKER_IGNORE_DEV_DEPENDENCIES?true:false;
   }
 
   private relativeModule(rootPath: string, moduleName: string) {
@@ -45,6 +48,7 @@ export class Walker {
       if (!pJ.dependencies) pJ.dependencies = {};
       if (!pJ.devDependencies) pJ.devDependencies = {};
       if (!pJ.optionalDependencies) pJ.optionalDependencies = {};
+      if(this.ignoreDevDependencies) delete pJ.devDependencies;
       return pJ;
     }
     return null;

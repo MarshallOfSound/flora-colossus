@@ -1,4 +1,5 @@
 import * as path from 'path';
+import * as process from 'process';
 import { expect } from 'chai';
 
 import { Module, Walker } from '../src/Walker';
@@ -47,6 +48,31 @@ describe('Walker', () => {
         return;
       }
       expect(dep('fsevents')).to.have.property('depType', DepType.DEV_OPTIONAL);
+    });
+  });
+
+  describe('WALKER_IGNORE_DEV_DEPENDENCIES', () => {
+    let modules: Module[];
+    const thisPackageDir = path.resolve(__dirname, '..');
+    const dep = (depName: string) => modules.find(module => module.name === depName);
+  
+    it('should save root directory correctly', () => {
+      const walker = new Walker(thisPackageDir)
+      expect(walker.getRootModule()).to.equal(thisPackageDir);
+    });
+  
+    describe('depType', () => {
+      beforeEach(async () => {
+        process.env.WALKER_IGNORE_DEV_DEPENDENCIES = "true";
+        modules = await buildWalker(path.resolve(__dirname, '..'));
+      });
+      afterEach(async () => {
+        delete process.env.WALKER_IGNORE_DEV_DEPENDENCIES;
+      });
+  
+      it('should skip dev dependency', () => {
+        expect(dep('mocha')).to.not.exist;
+      });
     });
   });
 

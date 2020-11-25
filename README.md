@@ -41,3 +41,10 @@ Returns `Promise<Module[]>`
 Will walk your entire node_modules tree reporting back an array of "modules", each
 module has a "path", "name" and "depType".  See the typescript definition file
 for more information.
+
+By default, walkTree will walk through all devDependencies and throw an error if any devDependency is not found in node_modules. You can force the walker to skip devDependencies by settig the environment variable `WALKER_IGNORE_DEV_DEPENDENCIES".
+
+Example (Mac):
+```
+export WALKER_IGNORE_DEV_DEPENDENCIES=true
+```
