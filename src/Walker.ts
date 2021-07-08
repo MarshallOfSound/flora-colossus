@@ -160,13 +160,13 @@ export class Walker {
   }
 
   private cache: Promise<Module[]> | null = null;
-  async walkTree() {
+  async walkTree(depType = DepType.ROOT) {
     d('starting tree walk');
     if (!this.cache) {
       this.cache = new Promise<Module[]>(async (resolve, reject) => {
         this.modules = [];
         try {
-          await this.walkDependenciesForModule(this.rootModule, DepType.ROOT);
+          await this.walkDependenciesForModule(this.rootModule, depType);
         } catch (err) {
           reject(err);
           return;
