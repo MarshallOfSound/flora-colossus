@@ -13,7 +13,9 @@
   "scripts": {
     "build": "tsc",
     "prepare": "npm run build",
-    "pretest": "cd test/fixtures/xml2js && yarn --frozen-lockfile",
+    "pretest": "npm run pretest:yarn",
+    "pretest:yarn": "cd test/fixtures/xml2js && yarn --frozen-lockfile",
+    "pretest:pnpm": "cd test/fixtures/xml2js && pnpm install --frozen-shrinkwrap",
     "test": "mocha --require ts-node/register test/*_spec.ts"
   },
   "dependencies": {
