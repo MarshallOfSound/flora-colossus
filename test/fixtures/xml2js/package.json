@@ -13,12 +13,10 @@
     "plist": "^2.0.1"
   },
   "//": [
-    "if generating lockfiles to match the existing one for tests, consider temporarily adding a resolutions object",
-    "such as below, it is supported by both pnpm and yarn",
-    {
-      "resolutions": {
-        "xml2js": "0.4.19"
-      }
-    }
-  ]
+    "the following resolutions below force pnpm and yarn to not install a later version of a dependency",
+    "with a new amount of duplicates of a required module"
+  ],
+  "resolutions": {
+    "xml2js": "0.4.19"
+  }
 }
