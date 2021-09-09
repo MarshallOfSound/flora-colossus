@@ -1,5 +1,8 @@
 lockfileVersion: 5.3
 
+overrides:
+  xml2js: 0.4.19
+
 specifiers:
   dbus-next: 0.6.1
   electron-packager: ^13.1.1
@@ -7,12 +10,12 @@ specifiers:
   jimp: ^0.2.27
   mpris-service: 2.1.0
   plist: ^2.0.1
-  xml2js: ^0.4.19
+  xml2js: 0.4.19
 
 optionalDependencies:
   dbus-next: 0.6.1
   mpris-service: 2.1.0
-  xml2js: 0.4.23
+  xml2js: 0.4.19
 
 devDependencies:
   electron-packager: 13.1.1
@@ -271,7 +274,7 @@ packages:
       long: 4.0.0
       put: 0.0.6
       safe-buffer: 5.2.1
-      xml2js: 0.4.23
+      xml2js: 0.4.19
     optionalDependencies:
       abstract-socket: 2.1.1
     dev: false
@@ -287,7 +290,7 @@ packages:
       long: 4.0.0
       put: 0.0.6
       safe-buffer: 5.2.1
-      xml2js: 0.4.23
+      xml2js: 0.4.19
     optionalDependencies:
       abstract-socket: 2.1.1
     dev: false
@@ -1123,7 +1126,7 @@ packages:
     resolution: {integrity: sha512-bjnliEOmGv3y1aMEfREMBJ9tfL3WR0i0CKPj61DnSLaoxWR3nLrsQrEbCId/8rF4NyRF0cCqisSVXyQYWM+mCQ==}
     dependencies:
       xml-parse-from-string: 1.0.1
-      xml2js: 0.4.23
+      xml2js: 0.4.19
     dev: true
 
   /parse-headers/2.0.4:
@@ -1734,16 +1737,11 @@ packages:
     resolution: {integrity: sha1-qQKekp09vN7RafPG4oI42VpdWig=}
     dev: true
 
-  /xml2js/0.4.23:
-    resolution: {integrity: sha512-ySPiMjM0+pLDftHgXY4By0uswI3SPKLDw/i3UXbnO8M/p28zqexCUoPmQFrYD+/1BzhGJSs2i1ERWKJAtiLrug==}
-    engines: {node: '>=4.0.0'}
+  /xml2js/0.4.19:
+    resolution: {integrity: sha512-esZnJZJOiJR9wWKMyuvSE1y6Dq5LCuJanqhxslH2bxM6duahNZ+HMpCLhBQGZkbX6xRf8x1Y2eJlgt2q3qo49Q==}
     dependencies:
       sax: 1.2.4
-      xmlbuilder: 11.0.1
-
-  /xmlbuilder/11.0.1:
-    resolution: {integrity: sha512-fDlsI/kFEx7gLvbecc0/ohLG50fugQp8ryHzMTuW9vSa1GJ0XYWKnhsUx7oie3G98+r56aTQIUB4kht42R3JvA==}
-    engines: {node: '>=4.0'}
+      xmlbuilder: 9.0.7
 
   /xmlbuilder/8.2.2:
     resolution: {integrity: sha1-aSSGc0ELS6QuGmE2VR0pIjNap3M=}
@@ -1753,7 +1751,6 @@ packages:
   /xmlbuilder/9.0.7:
     resolution: {integrity: sha1-Ey7mPS7FVlxVfiD0wi35rKaGsQ0=}
     engines: {node: '>=4.0'}
-    dev: true
 
   /xmldom/0.1.31:
     resolution: {integrity: sha512-yS2uJflVQs6n+CyjHoaBmVSqIDevTAWrzMmjG1Gc7h1qQ7uVozNhEPJAwZXWyGQ/Gafo3fCwrcaokezLPupVyQ==}
