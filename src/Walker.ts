@@ -46,25 +46,6 @@ export class Walker {
     return null;
   }
 
-  // match the last identical subsequence of a path
-  private getLastPathMatch(resolvedMainPath: string, packageName: string): string {
-    const moduleNameParts = packageName.split('/');
-    const resolvedPathParts = resolvedMainPath.split(path.sep);
-    resolvedPathLoop:
-    // start at an offset from the back because if moduleNameParts is too long, it's useless to check the last path segments
-    for (let i = resolvedPathParts.length - moduleNameParts.length; i >= 0; --i) {
-      for (let j = 0; j < moduleNameParts.length; ++j) {
-        const moduleNamePart = moduleNameParts[j];
-        if (moduleNamePart !== resolvedPathParts[i + j]) {
-          continue resolvedPathLoop;
-        }
-      }
-      // the continue will keep skipping this until all moduleNameParts have been checked
-      return path.join(...resolvedPathParts.slice());
-    }
-    throw new Error("failed to find the base of the package from the resolved main module, this should never happen.");
-  }
-
   private async walkDependenciesForModuleInModule(moduleName: string, modulePath: string, depType: DepType) {
     let discoveredPath: string | undefined;
     try {
@@ -72,11 +53,13 @@ export class Walker {
       discoveredPath = path.dirname(require.resolve(`${moduleName}/package.json`, { paths: [modulePath] }));
     } catch (err) {
       if (err.code === 'ERR_PACKAGE_PATH_NOT_EXPORTED') {
-        // package did not export package.json so we're going to try to read the main module and find the base of the package from its path
-        discoveredPath = this.getLastPathMatch(
-          require.resolve(moduleName, { paths: [modulePath] }),
-          moduleName
-        );
+        // package did not export package.json so we're going to steal the path from the error message as a fallback
+        // yes we're relying on this, we should instead try to directly rely on node's resolution algorithm, which means
+        // finding somewhere where it is exposed (I can't find it), or copying it
+        discoveredPath = path.dirname(err.message.match(/in (?<path>.+)$/).groups.path);
+        if (!await fs.pathExists(discoveredPath)) {
+            throw new Error('error did not end in an "in" clause with a path');
+        }
       }
     } finally {
       // If we can't find it the install is probably buggered
