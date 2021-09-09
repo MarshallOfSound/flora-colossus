@@ -34,10 +34,6 @@ export class Walker {
     this.rootModule = modulePath;
   }
 
-  private relativeModule(rootPath: string, moduleName: string) {
-    return path.resolve(rootPath, 'node_modules', moduleName);
-  }
-
   private async loadPackageJSON(modulePath: string): Promise<PackageJSON | null> {
     const pJPath = path.resolve(modulePath, 'package.json');
     if (await fs.pathExists(pJPath)) {
@@ -51,28 +47,21 @@ export class Walker {
   }
 
   private async walkDependenciesForModuleInModule(moduleName: string, modulePath: string, depType: DepType) {
-    let testPath = modulePath;
-    let discoveredPath: string | null = null;
-    let lastRelative: string | null = null;
-    // Try find it while searching recursively up the tree
-    while (!discoveredPath && this.relativeModule(testPath, moduleName) !== lastRelative) {
-      lastRelative = this.relativeModule(testPath, moduleName);
-      if (await fs.pathExists(lastRelative)) {
-        discoveredPath = lastRelative;
-      } else {
-        if (path.basename(path.dirname(testPath)) !== 'node_modules') {
-          testPath = path.dirname(testPath);
-        }
-        testPath = path.dirname(path.dirname(testPath));
-      }
-    }
-    // If we can't find it the install is probably buggered
-    if (!discoveredPath && depType !== DepType.OPTIONAL && depType !== DepType.DEV_OPTIONAL) {
-      throw new Error(
-        `Failed to locate module "${moduleName}" from "${modulePath}"
+    let discoveredPath: string | undefined;
+    try {
+      // Use the require machinery to resolve the package.json of the given module.
+      // Since we don't want the automatic behavior of resolving the 'main' module, we resolve the package.json
+      // to find the package base directory
+      discoveredPath = path.dirname(require.resolve(`${moduleName}/package.json`, { paths: [modulePath] }));
+    } catch (_moduleNotFoundErr) {
+      // If we can't find it the install is probably buggered
+      if (!discoveredPath && depType !== DepType.OPTIONAL && depType !== DepType.DEV_OPTIONAL) {
+        throw new Error(
+          `Failed to locate module "${moduleName}" from "${modulePath}"
 
-        This normally means that either you have deleted this package already somehow (check your ignore settings if using electron-packager).  Or your module installation failed.`
-      );
+          This normally means that either you have deleted this package already somehow (check your ignore settings if using electron-packager).  Or your module installation failed.`
+        );
+      }
     }
     // If we can find it let's do the same thing for that module
     if (discoveredPath) {
