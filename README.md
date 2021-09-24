@@ -43,11 +43,14 @@ module has a "path", "name" and "depType".  See the typescript definition file
 
 ## Testing with pnpm
 
-If attempting to test with pnpm, it may complain about the lockfile not being in sync with
-the package.json, this seems to be an issue because it expects the lockfile version to be
-updated, this may be a pnpm bug with --frozen-lockfile.
+To test with pnpm, switch the definition in `package.json#scripts#pretest` to `npm run pretest:pnpm`. instead of `npm run pretest:yarn`.
 
-For now, you can just force a particular old pnpm version to run the tests:
+You may notice that we use a particular version of pnpm when testing, this is because
+it may complain about the lockfile not being in sync with the package.json and fail.
+This seems to be a bug in pnpm because it won't use the different but compatible lockfile when
+`--frozen-lockfile` is specified.
+
+For now, you can just force a particular pnpm version to run the tests like we did.
 
 ```sh
 pnpx pnpm@~6.1 install
