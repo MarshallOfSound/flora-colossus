@@ -40,4 +40,16 @@ Returns `Promise<Module[]>`
 
 Will walk your entire node_modules tree reporting back an array of "modules", each
 module has a "path", "name" and "depType".  See the typescript definition file
-for more information.
+
+## Testing with pnpm
+
+If attempting to test with pnpm, it may complain about the lockfile not being in sync with
+the package.json, this seems to be an issue because it expects the lockfile version to be
+updated, this may be a pnpm bug with --frozen-lockfile.
+
+For now, you can just force a particular old pnpm version to run the tests:
+
+```sh
+pnpx pnpm@~6.1 install
+pnpx pnpm@~6.1 run test
+```
