@@ -17,6 +17,7 @@ export interface Module {
   depType: DepType;
   nativeModuleType: NativeModuleType,
   name: string;
+  depth: number;
 }
 
 const d = debug('flora-colossus');
@@ -46,7 +47,7 @@ export class Walker {
     return null;
   }
 
-  private async walkDependenciesForModuleInModule(moduleName: string, modulePath: string, depType: DepType) {
+  private async walkDependenciesForModuleInModule(moduleName: string, modulePath: string, depType: DepType, depth: number) {
     let discoveredPath: string | undefined;
     try {
       // Use the require machinery to resolve the package.json of the given module.
@@ -73,7 +74,7 @@ export class Walker {
     }
     // If we can find it let's do the same thing for that module
     if (discoveredPath) {
-      await this.walkDependenciesForModule(discoveredPath, depType);
+      await this.walkDependenciesForModule(discoveredPath, depType, depth + 1);
     }
   }
 
@@ -86,7 +87,7 @@ export class Walker {
     return NativeModuleType.NONE
   }
 
-  private async walkDependenciesForModule(modulePath: string, depType: DepType) {
+  private async walkDependenciesForModule(modulePath: string, depType: DepType, depth: number) {
     d('walk reached:', modulePath, ' Type is:', DepType[depType]);
     // We have already traversed this module
     if (this.walkHistory.has(modulePath)) {
@@ -95,9 +96,14 @@ export class Walker {
       const existingModule = this.modules.find(module =>  module.path === modulePath) as Module;
       // If the depType we are traversing with now is higher than the
       // last traversal then update it (prod superseeds dev for instance)
+      // NOTE: doesn't this cause the pruning logic to to not prune dev>prod dependencies?
       if (depTypeGreater(depType, existingModule.depType)) {
         d(`existing module has a type of "${existingModule.depType}", new module type would be "${depType}" therefore updating`);
         existingModule.depType = depType;
+      }
+      // If the depth we are traversing is less, update it
+      if (depth < existingModule.depth) {
+        existingModule.depth = depth;
       }
       return;
     }
@@ -117,6 +123,7 @@ export class Walker {
       nativeModuleType: await this.detectNativeModuleType(modulePath, pJ),
       path: modulePath,
       name: pJ.name,
+      depth
     });
 
     // For every prod dep
@@ -131,6 +138,7 @@ export class Walker {
         moduleName,
         modulePath,
         childDepType(depType, DepType.PROD),
+        depth
       );
     }
 
@@ -140,6 +148,7 @@ export class Walker {
         moduleName,
         modulePath,
         childDepType(depType, DepType.OPTIONAL),
+        depth
       );
     }
 
@@ -151,6 +160,7 @@ export class Walker {
           moduleName,
           modulePath,
           childDepType(depType, DepType.DEV),
+          depth
         );
       }
     }
@@ -163,7 +173,7 @@ export class Walker {
       this.cache = new Promise<Module[]>(async (resolve, reject) => {
         this.modules = [];
         try {
-          await this.walkDependenciesForModule(this.rootModule, DepType.ROOT);
+          await this.walkDependenciesForModule(this.rootModule, DepType.ROOT, 0);
         } catch (err) {
           reject(err);
           return;
