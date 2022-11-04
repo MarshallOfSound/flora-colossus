@@ -1,6 +1,6 @@
 {
   "name": "flora-colossus",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Walks your node_modules tree",
   "author": "Samuel Attard",
   "license": "MIT",
