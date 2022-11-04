@@ -17,6 +17,7 @@ export interface Module {
   depType: DepType;
   nativeModuleType: NativeModuleType,
   name: string;
+  depth: number;
 }
 
 const d = debug('flora-colossus');
@@ -34,10 +35,6 @@ export class Walker {
     this.rootModule = modulePath;
   }
 
-  private relativeModule(rootPath: string, moduleName: string) {
-    return path.resolve(rootPath, 'node_modules', moduleName);
-  }
-
   private async loadPackageJSON(modulePath: string): Promise<PackageJSON | null> {
     const pJPath = path.resolve(modulePath, 'package.json');
     if (await fs.pathExists(pJPath)) {
@@ -50,33 +47,34 @@ export class Walker {
     return null;
   }
 
-  private async walkDependenciesForModuleInModule(moduleName: string, modulePath: string, depType: DepType) {
-    let testPath = modulePath;
-    let discoveredPath: string | null = null;
-    let lastRelative: string | null = null;
-    // Try find it while searching recursively up the tree
-    while (!discoveredPath && this.relativeModule(testPath, moduleName) !== lastRelative) {
-      lastRelative = this.relativeModule(testPath, moduleName);
-      if (await fs.pathExists(lastRelative)) {
-        discoveredPath = lastRelative;
-      } else {
-        if (path.basename(path.dirname(testPath)) !== 'node_modules') {
-          testPath = path.dirname(testPath);
+  private async walkDependenciesForModuleInModule(moduleName: string, modulePath: string, depType: DepType, depth: number) {
+    let discoveredPath: string | undefined;
+    try {
+      // Use the require machinery to resolve the package.json of the given module.
+      discoveredPath = path.dirname(require.resolve(`${moduleName}/package.json`, { paths: [modulePath] }));
+    } catch (err) {
+      if (err.code === 'ERR_PACKAGE_PATH_NOT_EXPORTED') {
+        // package did not export package.json so we're going to steal the path from the error message as a fallback
+        // yes we're relying on this, we should instead try to directly rely on node's resolution algorithm, which means
+        // finding somewhere where it is exposed (I can't find it), or copying it
+        discoveredPath = path.dirname(err.message.match(/in (?<path>.+)$/).groups.path);
+        if (!await fs.pathExists(discoveredPath)) {
+            throw new Error('error did not end in an "in" clause with a path');
         }
-        testPath = path.dirname(path.dirname(testPath));
       }
-    }
-    // If we can't find it the install is probably buggered
-    if (!discoveredPath && depType !== DepType.OPTIONAL && depType !== DepType.DEV_OPTIONAL) {
-      throw new Error(
-        `Failed to locate module "${moduleName}" from "${modulePath}"
+    } finally {
+      // If we can't find it the install is probably buggered
+      if (!discoveredPath && depType !== DepType.OPTIONAL && depType !== DepType.DEV_OPTIONAL) {
+        throw new Error(
+          `Failed to locate module "${moduleName}" from "${modulePath}"
 
-        This normally means that either you have deleted this package already somehow (check your ignore settings if using electron-packager).  Or your module installation failed.`
-      );
+          This normally means that either you have deleted this package already somehow (check your ignore settings if using electron-packager).  Or your module installation failed.`
+        );
+      }
     }
     // If we can find it let's do the same thing for that module
     if (discoveredPath) {
-      await this.walkDependenciesForModule(discoveredPath, depType);
+      await this.walkDependenciesForModule(discoveredPath, depType, depth + 1);
     }
   }
 
@@ -89,7 +87,7 @@ export class Walker {
     return NativeModuleType.NONE
   }
 
-  private async walkDependenciesForModule(modulePath: string, depType: DepType) {
+  private async walkDependenciesForModule(modulePath: string, depType: DepType, depth: number) {
     d('walk reached:', modulePath, ' Type is:', DepType[depType]);
     // We have already traversed this module
     if (this.walkHistory.has(modulePath)) {
@@ -98,9 +96,14 @@ export class Walker {
       const existingModule = this.modules.find(module =>  module.path === modulePath) as Module;
       // If the depType we are traversing with now is higher than the
       // last traversal then update it (prod superseeds dev for instance)
+      // NOTE: doesn't this cause the pruning logic to to not prune dev>prod dependencies?
       if (depTypeGreater(depType, existingModule.depType)) {
         d(`existing module has a type of "${existingModule.depType}", new module type would be "${depType}" therefore updating`);
         existingModule.depType = depType;
+      }
+      // If the depth we are traversing is less, update it
+      if (depth < existingModule.depth) {
+        existingModule.depth = depth;
       }
       return;
     }
@@ -120,6 +123,7 @@ export class Walker {
       nativeModuleType: await this.detectNativeModuleType(modulePath, pJ),
       path: modulePath,
       name: pJ.name,
+      depth
     });
 
     // For every prod dep
@@ -134,6 +138,7 @@ export class Walker {
         moduleName,
         modulePath,
         childDepType(depType, DepType.PROD),
+        depth
       );
     }
 
@@ -143,6 +148,7 @@ export class Walker {
         moduleName,
         modulePath,
         childDepType(depType, DepType.OPTIONAL),
+        depth
       );
     }
 
@@ -154,6 +160,7 @@ export class Walker {
           moduleName,
           modulePath,
           childDepType(depType, DepType.DEV),
+          depth
         );
       }
     }
@@ -166,7 +173,7 @@ export class Walker {
       this.cache = new Promise<Module[]>(async (resolve, reject) => {
         this.modules = [];
         try {
-          await this.walkDependenciesForModule(this.rootModule, DepType.ROOT);
+          await this.walkDependenciesForModule(this.rootModule, DepType.ROOT, 0);
         } catch (err) {
           reject(err);
           return;

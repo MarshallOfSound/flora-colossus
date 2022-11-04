@@ -11,5 +11,12 @@
     "galactus": "^0.2.1",
     "jimp": "^0.2.27",
     "plist": "^2.0.1"
+  },
+  "//": [
+    "the following resolutions below force pnpm and yarn to not install a later version of a dependency",
+    "with a new amount of duplicates of a required module"
+  ],
+  "resolutions": {
+    "xml2js": "0.4.19"
   }
 }
