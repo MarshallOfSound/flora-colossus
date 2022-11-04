@@ -18,7 +18,8 @@
     "outDir": "lib",
     "lib":[
       "es2018"
-    ]
+    ],
+    "strict": true
   },
   "formatCodeOptions": {
     "indentSize": 2,

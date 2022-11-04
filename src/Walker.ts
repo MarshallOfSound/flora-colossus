@@ -23,7 +23,7 @@ const d = debug('flora-colossus');
 
 export class Walker {
   private rootModule: string;
-  private modules: Module[];
+  private modules: Module[] = [];
   private walkHistory: Set<string> = new Set();
 
   constructor(modulePath: string) {
