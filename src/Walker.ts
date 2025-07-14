@@ -1,9 +1,11 @@
-import * as debug from 'debug';
-import * as fs from 'fs-extra';
-import * as path from 'path';
+import { existsSync } from 'node:fs';
+import * as fs from 'node:fs/promises';
+import * as path from 'node:path';
 
-import { DepType, depTypeGreater, childDepType } from './depTypes';
-import { NativeModuleType } from './nativeModuleTypes';
+import debug from 'debug';
+
+import { DepType, depTypeGreater, childDepType } from './depTypes.js';
+import { NativeModuleType } from './nativeModuleTypes.js';
 
 export type VersionRange = string;
 export interface PackageJSON {
@@ -40,8 +42,8 @@ export class Walker {
 
   private async loadPackageJSON(modulePath: string): Promise<PackageJSON | null> {
     const pJPath = path.resolve(modulePath, 'package.json');
-    if (await fs.pathExists(pJPath)) {
-      const pJ = await fs.readJson(pJPath);
+    if (existsSync(pJPath)) {
+      const pJ = JSON.parse(await fs.readFile(pJPath, 'utf-8'));
       if (!pJ.dependencies) pJ.dependencies = {};
       if (!pJ.devDependencies) pJ.devDependencies = {};
       if (!pJ.optionalDependencies) pJ.optionalDependencies = {};
@@ -57,7 +59,7 @@ export class Walker {
     // Try find it while searching recursively up the tree
     while (!discoveredPath && this.relativeModule(testPath, moduleName) !== lastRelative) {
       lastRelative = this.relativeModule(testPath, moduleName);
-      if (await fs.pathExists(lastRelative)) {
+      if (existsSync(lastRelative)) {
         discoveredPath = lastRelative;
       } else {
         if (path.basename(path.dirname(testPath)) !== 'node_modules') {
@@ -83,7 +85,7 @@ export class Walker {
   private async detectNativeModuleType(modulePath: string, pJ: PackageJSON): Promise<NativeModuleType> {
     if (pJ.dependencies['prebuild-install']) {
       return NativeModuleType.PREBUILD
-    } else if (await fs.pathExists(path.join(modulePath, 'binding.gyp'))) {
+    } else if (existsSync(path.join(modulePath, 'binding.gyp'))) {
       return NativeModuleType.NODE_GYP
     }
     return NativeModuleType.NONE

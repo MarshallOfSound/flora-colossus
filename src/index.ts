@@ -1,2 +1,2 @@
-export * from './Walker';
-export * from './depTypes';
+export * from './Walker.js';
+export * from './depTypes.js';

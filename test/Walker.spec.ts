@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { expect } from 'chai';
+import { describe, it, beforeEach, expect } from 'vitest';
 
 import { Module, Walker } from '../src/Walker';
 import { DepType } from '../src/depTypes';
@@ -17,7 +17,7 @@ describe('Walker', () => {
 
   it('should save root directory correctly', () => {
     const walker = new Walker(thisPackageDir)
-    expect(walker.getRootModule()).to.equal(thisPackageDir);
+    expect(walker.getRootModule()).toBe(thisPackageDir);
   });
 
   describe('depType', () => {
@@ -26,27 +26,23 @@ describe('Walker', () => {
     });
 
     it('should locate top level prod deps as prod deps', () => {
-      expect(dep('fs-extra')).to.have.property('depType', DepType.PROD);
+      expect(dep('debug')).toHaveProperty('depType', DepType.PROD);
     });
 
     it('should locate top level dev deps as dev deps', () => {
-      expect(dep('mocha')).to.have.property('depType', DepType.DEV);
+      expect(dep('vitest')).toHaveProperty('depType', DepType.DEV);
     });
 
     it('should locate a dep of a dev dep as a dev dep', () => {
-      expect(dep('yargs')).to.have.property('depType', DepType.DEV);
+      expect(dep('chai')).toHaveProperty('depType', DepType.DEV);
     });
 
     it('should locate a dep of a dev dep that is also a top level prod dep as a prod dep', () => {
-      expect(dep('debug')).to.have.property('depType', DepType.PROD);
+      expect(dep('debug')).toHaveProperty('depType', DepType.PROD);
     });
 
-    it('should locate a dep of a dev dep that is optional as a dev_optional dep', function () {
-      if (process.platform !== 'darwin') {
-        this.skip();
-        return;
-      }
-      expect(dep('fsevents')).to.have.property('depType', DepType.DEV_OPTIONAL);
+    it.skipIf(process.platform !== 'darwin')('should locate a dep of a dev dep that is optional as a dev_optional dep', () => {
+      expect(dep('fsevents')).toHaveProperty('depType', DepType.DEV_OPTIONAL);
     });
   });
 
@@ -56,15 +52,15 @@ describe('Walker', () => {
     });
 
     it('should detect a module that uses prebuild', () => {
-      expect(dep('native-uses-prebuild')).to.have.property('nativeModuleType', NativeModuleType.PREBUILD);
+      expect(dep('native-uses-prebuild')).toHaveProperty('nativeModuleType', NativeModuleType.PREBUILD);
     });
 
     it('should detect a module that uses node-gyp', () => {
-      expect(dep('native-uses-node-gyp')).to.have.property('nativeModuleType', NativeModuleType.NODE_GYP);
+      expect(dep('native-uses-node-gyp')).toHaveProperty('nativeModuleType', NativeModuleType.NODE_GYP);
     });
 
     it('should detect a module that is not native', () => {
-      expect(dep('pure-javascript-module')).to.have.property('nativeModuleType', NativeModuleType.NONE);
+      expect(dep('pure-javascript-module')).toHaveProperty('nativeModuleType', NativeModuleType.NONE);
     });
   });
 
@@ -77,7 +73,7 @@ describe('Walker', () => {
 
     it('should detect multiple instances of the same module', () => {
       const xmlBuilderModules = modules.filter(m => m.name === 'xmlbuilder');
-      expect(xmlBuilderModules).to.have.lengthOf(2);
+      expect(xmlBuilderModules).toHaveLength(2);
     });
 
     it('should detect the hoisted and unhoisted instances correctly as optional/dev', () => {
@@ -86,8 +82,8 @@ describe('Walker', () => {
       const expectedDev = xmlBuilderModules.find(m => m.path.includes(deepIdentifier));
       // Hoisted for xml2js
       const expectedOptional = xmlBuilderModules.find(m => !m.path.includes(deepIdentifier));
-      expect(expectedDev).to.have.property('depType', DepType.DEV);
-      expect(expectedOptional).to.have.property('depType', DepType.OPTIONAL);
+      expect(expectedDev).toHaveProperty('depType', DepType.DEV);
+      expect(expectedOptional).toHaveProperty('depType', DepType.OPTIONAL);
     });
   });
 });
