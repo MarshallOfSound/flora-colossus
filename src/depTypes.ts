@@ -3,7 +3,7 @@ export enum DepType {
   DEV,
   OPTIONAL,
   DEV_OPTIONAL,
-  ROOT
+  ROOT,
 }
 
 export const depTypeGreater = (newType: DepType, existing: DepType) => {
@@ -65,11 +65,11 @@ export const depTypeGreater = (newType: DepType, existing: DepType) => {
     default:
       return false;
   }
-}
+};
 
 export const childDepType = (parentType: DepType, childType: DepType) => {
   if (childType === DepType.ROOT) {
-    throw new Error('Something went wrong, a child dependency can\'t be marked as the ROOT');
+    throw new Error("Something went wrong, a child dependency can't be marked as the ROOT");
   }
   switch (parentType) {
     case DepType.ROOT:
@@ -85,4 +85,4 @@ export const childDepType = (parentType: DepType, childType: DepType) => {
       if (childType === DepType.OPTIONAL) return DepType.DEV_OPTIONAL;
       return DepType.DEV;
   }
-}
+};

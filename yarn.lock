@@ -802,6 +802,11 @@ postcss@^8.5.6:
     picocolors "^1.1.1"
     source-map-js "^1.2.1"
 
+prettier@^3.6.2:
+  version "3.6.2"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.6.2.tgz#ccda02a1003ebbb2bfda6f83a074978f608b9393"
+  integrity sha512-I7AIg5boAr5R0FFtJ6rCfD+LFsWHp81dolrFD8S79U9tb8Az2nGrJncnMSnys+bpQJfRUzqs9hnA81OAA3hCuQ==
+
 rollup@^4.40.0:
   version "4.45.0"
   resolved "https://registry.yarnpkg.com/rollup/-/rollup-4.45.0.tgz#92d1b164eca1c6f2cb399ae7a1a8ee78967b6e33"

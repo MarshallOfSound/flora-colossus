@@ -7,9 +7,8 @@ describe('depTypes', () => {
     it('should contain unique numbers', () => {
       expect(
         Object.keys(DepType)
-          .map(key => DepType[key])
-          .filter(value => typeof value === 'number')
-          .length
+          .map((key) => DepType[key])
+          .filter((value) => typeof value === 'number').length,
       ).toBe(5);
     });
   });

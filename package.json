@@ -20,7 +20,9 @@
     "prepare": "npm run build",
     "pretest": "cd test/fixtures/xml2js && yarn --frozen-lockfile",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "lint": "prettier --check \"src/**/*.ts\" \"test/**/*.ts\"",
+    "lint:fix": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\""
   },
   "dependencies": {
     "debug": "^4.4.1"
@@ -30,6 +32,7 @@
     "@types/debug": "^4.1.12",
     "@types/node": "^22.0.13",
     "@vitest/coverage-v8": "^3.2.4",
+    "prettier": "^3.6.2",
     "typescript": "^5.8.3",
     "vitest": "^3.2.4"
   },
