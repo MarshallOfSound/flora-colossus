@@ -1,0 +1,9 @@
+{
+  "name": "test-git-deps",
+  "version": "1.0.0",
+  "dependencies": {
+    "git-installed-package": "github:user/repo#v1.0.0",
+    "local-file-package": "file:../local-package"
+  },
+  "devDependencies": {}
+}

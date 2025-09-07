@@ -1,0 +1,11 @@
+{
+  "name": "test-bundled-deps",
+  "version": "1.0.0",
+  "dependencies": {
+    "bundled-package": "1.0.0"
+  },
+  "bundledDependencies": [
+    "bundled-package"
+  ],
+  "devDependencies": {}
+}

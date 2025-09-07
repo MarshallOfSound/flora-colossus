@@ -1,0 +1,10 @@
+{
+  "name": "test-monorepo",
+  "version": "1.0.0",
+  "dependencies": {
+    "shared-util": "1.0.0",
+    "package-specific-dep": "1.0.0",
+    "@monorepo/shared": "1.0.0"
+  },
+  "devDependencies": {}
+}

@@ -4377,9 +4377,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"xml-test@workspace:test/fixtures/real/xml2js":
+"xml-test@workspace:test/fixtures/yarn/xml2js":
   version: 0.0.0-use.local
-  resolution: "xml-test@workspace:test/fixtures/real/xml2js"
+  resolution: "xml-test@workspace:test/fixtures/yarn/xml2js"
   dependencies:
     dbus-next: "npm:0.6.1"
     electron-packager: "npm:^13.1.1"

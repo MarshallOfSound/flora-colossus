@@ -1,0 +1,9 @@
+{
+  "name": "test-resolution-algo",
+  "version": "1.0.0",
+  "dependencies": {
+    "commonly-used": "2.0.0",
+    "other-dep": "1.0.0"
+  },
+  "devDependencies": {}
+}

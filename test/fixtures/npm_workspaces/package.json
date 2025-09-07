@@ -1,0 +1,12 @@
+{
+  "name": "test-npm-workspaces",
+  "version": "1.0.0",
+  "workspaces": [
+    "packages/*"
+  ],
+  "dependencies": {
+    "@workspace/shared": "1.0.0",
+    "@workspace/utils": "1.0.0"
+  },
+  "devDependencies": {}
+}

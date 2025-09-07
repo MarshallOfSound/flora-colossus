@@ -1,0 +1,10 @@
+{
+  "name": "test-minimal-packages",
+  "version": "1.0.0",
+  "dependencies": {
+    "no-deps-package": "1.0.0",
+    "empty-deps-package": "1.0.0",
+    "minimal-package": "1.0.0"
+  },
+  "devDependencies": {}
+}

@@ -1,0 +1,16 @@
+{
+  "name": "test-dep-precedence",
+  "version": "1.0.0",
+  "dependencies": {
+    "used-everywhere": "1.0.0",
+    "maybe-needed": "1.0.0"
+  },
+  "devDependencies": {
+    "used-everywhere": "1.0.0",
+    "dev-optional-dep": "1.0.0"
+  },
+  "optionalDependencies": {
+    "maybe-needed": "1.0.0",
+    "dev-optional-dep": "1.0.0"
+  }
+}

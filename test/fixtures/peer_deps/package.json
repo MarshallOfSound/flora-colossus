@@ -1,0 +1,11 @@
+{
+  "name": "test-peer-deps",
+  "version": "1.0.0",
+  "dependencies": {
+    "react": "18.0.0"
+  },
+  "peerDependencies": {
+    "react": ">=16.0.0"
+  },
+  "devDependencies": {}
+}

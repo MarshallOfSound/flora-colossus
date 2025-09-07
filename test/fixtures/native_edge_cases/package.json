@@ -1,0 +1,11 @@
+{
+  "name": "test-native-edge-cases",
+  "version": "1.0.0",
+  "dependencies": {
+    "custom-gyp-location": "1.0.0",
+    "cmake-native": "1.0.0",
+    "nan-module": "1.0.0",
+    "napi-module": "1.0.0"
+  },
+  "devDependencies": {}
+}

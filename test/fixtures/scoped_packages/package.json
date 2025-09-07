@@ -1,0 +1,10 @@
+{
+  "name": "test-scoped-packages",
+  "version": "1.0.0",
+  "dependencies": {
+    "@babel/core": "7.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "18.0.0"
+  }
+}

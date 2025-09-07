@@ -1,0 +1,9 @@
+{
+  "name": "test-pnpm-layout",
+  "version": "1.0.0",
+  "dependencies": {
+    "lodash": "4.17.21",
+    "transitive-dep": "1.0.0"
+  },
+  "devDependencies": {}
+}
