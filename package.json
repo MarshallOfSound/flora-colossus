@@ -18,7 +18,6 @@
   "scripts": {
     "build": "tsc",
     "prepare": "npm run build",
-    "pretest": "cd test/fixtures/xml2js && yarn --frozen-lockfile",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "prettier --check \"src/**/*.ts\" \"test/**/*.ts\"",
@@ -39,5 +38,9 @@
   "files": [
     "dist",
     "README.md"
+  ],
+  "packageManager": "yarn@4.9.4+sha512.7b1cb0b62abba6a537b3a2ce00811a843bea02bcf53138581a6ae5b1bf563f734872bd47de49ce32a9ca9dcaff995aa789577ffb16811da7c603dcf69e73750b",
+  "workspaces": [
+    "test/fixtures/real/*"
   ]
 }
