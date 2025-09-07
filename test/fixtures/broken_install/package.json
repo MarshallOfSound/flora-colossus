@@ -1,8 +1,9 @@
 {
   "name": "test-broken-install",
   "version": "1.0.0",
-  "dependencies": {
+  "dependencies": {},
+  "devDependencies": {},
+  "optionalDependencies": {
     "incomplete-package": "1.0.0"
-  },
-  "devDependencies": {}
+  }
 }
