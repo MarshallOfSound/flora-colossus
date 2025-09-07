@@ -4387,7 +4387,7 @@ __metadata:
     jimp: "npm:^0.2.27"
     mpris-service: "npm:2.1.0"
     plist: "npm:^2.0.1"
-    xml2js: "npm:^0.4.19"
+    xml2js: "npm:^0.5.0"
   dependenciesMeta:
     dbus-next:
       optional: true
@@ -4398,7 +4398,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"xml2js@npm:^0.4.17, xml2js@npm:^0.4.19":
+"xml2js@npm:^0.4.17":
   version: 0.4.23
   resolution: "xml2js@npm:0.4.23"
   dependencies:
