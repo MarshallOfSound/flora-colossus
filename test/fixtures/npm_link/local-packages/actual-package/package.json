@@ -1,0 +1,9 @@
+{
+  "name": "linked-package",
+  "version": "1.0.0",
+  "dependencies": {
+    "transitive-dep": "1.0.0"
+  },
+  "devDependencies": {},
+  "optionalDependencies": {}
+}

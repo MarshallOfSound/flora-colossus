@@ -63,13 +63,24 @@ export class Walker {
     // Try find it while searching recursively up the tree
     while (!discoveredPath && this.relativeModule(testPath, moduleName) !== lastRelative) {
       lastRelative = this.relativeModule(testPath, moduleName);
-      if (existsSync(lastRelative)) {
+      try {
+        // Check if path exists (handles both regular files/dirs and valid symlinks)
+        await fs.access(lastRelative);
         discoveredPath = lastRelative;
-      } else {
-        if (path.basename(path.dirname(testPath)) !== 'node_modules') {
-          testPath = path.dirname(testPath);
+      } catch {
+        // Try to check if it's a symlink (even if broken)
+        try {
+          await fs.lstat(lastRelative);
+          // It exists as a symlink but target doesn't exist (broken symlink)
+          d(`found broken symlink at ${lastRelative}, skipping`);
+          return; // Skip broken symlinks gracefully
+        } catch {
+          // Path doesn't exist at all, continue searching up the tree
+          if (path.basename(path.dirname(testPath)) !== 'node_modules') {
+            testPath = path.dirname(testPath);
+          }
+          testPath = path.dirname(path.dirname(testPath));
         }
-        testPath = path.dirname(path.dirname(testPath));
       }
     }
     // If we can't find it the install is probably buggered
@@ -100,11 +111,22 @@ export class Walker {
 
   private async walkDependenciesForModule(modulePath: string, depType: DepType) {
     d('walk reached:', modulePath, ' Type is:', DepType[depType]);
-    // We have already traversed this module
-    if (this.walkHistory.has(modulePath)) {
-      d('already walked this route');
-      // Find the existing module reference
-      const existingModule = this.modules.find((module) => module.path === modulePath) as Module;
+    
+    // Resolve symlinks to get the real path for proper duplicate detection
+    let realPath = modulePath;
+    try {
+      realPath = await fs.realpath(modulePath);
+    } catch (err) {
+      // If realpath fails (e.g., broken symlink), log and return early
+      d('failed to resolve path:', modulePath, err);
+      return;
+    }
+    
+    // We have already traversed this module (using real path to catch symlink cycles)
+    if (this.walkHistory.has(realPath)) {
+      d('already walked this route (real path)');
+      // Find the existing module reference by real path
+      const existingModule = this.modules.find((module) => module.path === realPath) as Module;
       // If the depType we are traversing with now is higher than the
       // last traversal then update it (prod superseeds dev for instance)
       if (depTypeGreater(depType, existingModule.depType)) {
@@ -116,7 +138,7 @@ export class Walker {
       return;
     }
 
-    const pJ = await this.loadPackageJSON(modulePath);
+    const pJ = await this.loadPackageJSON(realPath);
     // If the module doesn't have a package.json file it is probably a
     // dead install from yarn (they dont clean up for some reason)
     if (!pJ) {
@@ -124,12 +146,12 @@ export class Walker {
       return;
     }
 
-    // Record this module as being traversed
-    this.walkHistory.add(modulePath);
+    // Record this module as being traversed (using real path)
+    this.walkHistory.add(realPath);
     this.modules.push({
       depType,
-      nativeModuleType: await this.detectNativeModuleType(modulePath, pJ),
-      path: modulePath,
+      nativeModuleType: await this.detectNativeModuleType(realPath, pJ),
+      path: realPath,
       name: pJ.name,
     });
 
@@ -138,12 +160,12 @@ export class Walker {
       // npm decides it's a funny thing to put optional dependencies in the "dependencies" section
       // after install, because that makes perfect sense
       if (moduleName in pJ.optionalDependencies) {
-        d(`found ${moduleName} in prod deps of ${modulePath} but it is also marked optional`);
+        d(`found ${moduleName} in prod deps of ${realPath} but it is also marked optional`);
         continue;
       }
       await this.walkDependenciesForModuleInModule(
         moduleName,
-        modulePath,
+        realPath,
         childDepType(depType, DepType.PROD),
       );
     }
@@ -152,7 +174,7 @@ export class Walker {
     for (const moduleName in pJ.optionalDependencies) {
       await this.walkDependenciesForModuleInModule(
         moduleName,
-        modulePath,
+        realPath,
         childDepType(depType, DepType.OPTIONAL),
       );
     }
@@ -163,7 +185,7 @@ export class Walker {
       for (const moduleName in pJ.devDependencies) {
         await this.walkDependenciesForModuleInModule(
           moduleName,
-          modulePath,
+          realPath,
           childDepType(depType, DepType.DEV),
         );
       }

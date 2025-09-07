@@ -383,6 +383,86 @@ describe('Walker', () => {
       });
     });
 
+    describe('npm/yarn link scenarios', () => {
+      describe('basic npm link', () => {
+        beforeEach(async () => {
+          modules = await buildWalker(path.join(__dirname, 'fixtures', 'npm_link'));
+        });
+
+        it('should follow symlinked package to actual location', () => {
+          const linkedPkg = dep('linked-package');
+          expect(linkedPkg).toBeDefined();
+          expect(linkedPkg?.name).toBe('linked-package');
+        });
+
+        it('should detect dependencies of linked packages', () => {
+          // The linked package has a transitive-dep dependency
+          expect(dep('transitive-dep')).toBeDefined();
+        });
+
+        it('should correctly identify linked package as production dependency', () => {
+          expect(dep('linked-package')).toHaveProperty('depType', DepType.PROD);
+        });
+
+        it('should also detect regular non-linked dependencies', () => {
+          expect(dep('regular-dep')).toBeDefined();
+        });
+
+        it('should not traverse the same symlink multiple times', () => {
+          const linkedPkgs = modules.filter((m) => m.name === 'linked-package');
+          expect(linkedPkgs.length).toBe(1);
+        });
+      });
+
+      describe('circular symlinks', () => {
+        beforeEach(async () => {
+          modules = await buildWalker(path.join(__dirname, 'fixtures', 'circular_links'));
+        });
+
+        it('should handle circular symlinks without infinite loop', () => {
+          expect(modules.length).toBeGreaterThan(0);
+          expect(dep('package-a')).toBeDefined();
+          expect(dep('package-b')).toBeDefined();
+        });
+
+        it('should detect both packages in circular dependency chain', () => {
+          const packageA = dep('package-a');
+          const packageB = dep('package-b');
+          expect(packageA).toBeDefined();
+          expect(packageB).toBeDefined();
+        });
+
+        it('should not create infinite entries for circular links', () => {
+          const packageAs = modules.filter((m) => m.name === 'package-a');
+          const packageBs = modules.filter((m) => m.name === 'package-b');
+          expect(packageAs.length).toBe(1);
+          expect(packageBs.length).toBe(1);
+        });
+      });
+
+      describe('broken symlinks', () => {
+        beforeEach(async () => {
+          modules = await buildWalker(path.join(__dirname, 'fixtures', 'broken_links'));
+        });
+
+        it('should skip broken symlinks without crashing', () => {
+          expect(() => modules).not.toThrow();
+        });
+
+        it('should not include broken symlink in module list', () => {
+          expect(dep('broken-link')).toBeUndefined();
+        });
+
+        it('should still process valid packages alongside broken symlinks', () => {
+          expect(dep('valid-package')).toBeDefined();
+        });
+
+        it('should complete walking despite broken symlinks', () => {
+          expect(modules.length).toBeGreaterThan(0);
+        });
+      });
+    });
+
     describe('empty and minimal packages', () => {
       beforeEach(async () => {
         modules = await buildWalker(path.join(__dirname, 'fixtures', 'minimal_packages'));

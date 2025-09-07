@@ -1,0 +1,9 @@
+{
+  "name": "test-circular-links",
+  "version": "1.0.0",
+  "dependencies": {
+    "package-a": "1.0.0",
+    "package-b": "1.0.0"
+  },
+  "devDependencies": {}
+}
