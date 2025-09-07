@@ -805,13 +805,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"base64-js@npm:1.2.0":
-  version: 1.2.0
-  resolution: "base64-js@npm:1.2.0"
-  checksum: 10c0/0f13474c78515518ede791e687a8ce8fae953058319d9b146e12b398533716bfe26b60419cfac41de9b7e883a87675480bf8bf204d4242596cc43487da8708fb
-  languageName: node
-  linkType: hard
-
 "base64-js@npm:^1.5.1":
   version: 1.5.1
   resolution: "base64-js@npm:1.5.1"
@@ -3104,18 +3097,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"plist@npm:^2.0.1":
-  version: 2.1.0
-  resolution: "plist@npm:2.1.0"
-  dependencies:
-    base64-js: "npm:1.2.0"
-    xmlbuilder: "npm:8.2.2"
-    xmldom: "npm:0.1.x"
-  checksum: 10c0/3f128a8ebf037247ad8b33f0ac12e20ca5c2f0a6f2f97feed9acc606a0514e3ca41223cc87f01254eeed617153688fe88055518fa87e1555de946a6eef03c6c5
-  languageName: node
-  linkType: hard
-
-"plist@npm:^3.0.0, plist@npm:^3.0.1":
+"plist@npm:^3.0.0, plist@npm:^3.0.1, plist@npm:^3.0.5":
   version: 3.1.0
   resolution: "plist@npm:3.1.0"
   dependencies:
@@ -4386,7 +4368,7 @@ __metadata:
     galactus: "npm:^0.2.1"
     jimp: "npm:^0.2.27"
     mpris-service: "npm:2.1.0"
-    plist: "npm:^2.0.1"
+    plist: "npm:^3.0.5"
     xml2js: "npm:^0.5.0"
   dependenciesMeta:
     dbus-next:
@@ -4418,13 +4400,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"xmlbuilder@npm:8.2.2":
-  version: 8.2.2
-  resolution: "xmlbuilder@npm:8.2.2"
-  checksum: 10c0/5806a607e8c02fe6055a6b0c013e99489d74945019a8d4fdadcb9e92ffb0342987ed9f04fa46579762ad825044417e5ff019081c9d7ec058384e65b502aa7fb2
-  languageName: node
-  linkType: hard
-
 "xmlbuilder@npm:^15.1.1":
   version: 15.1.1
   resolution: "xmlbuilder@npm:15.1.1"
@@ -4436,13 +4411,6 @@ __metadata:
   version: 11.0.1
   resolution: "xmlbuilder@npm:11.0.1"
   checksum: 10c0/74b979f89a0a129926bc786b913459bdbcefa809afaa551c5ab83f89b1915bdaea14c11c759284bb9b931e3b53004dbc2181e21d3ca9553eeb0b2a7b4e40c35b
-  languageName: node
-  linkType: hard
-
-"xmldom@npm:0.1.x":
-  version: 0.1.31
-  resolution: "xmldom@npm:0.1.31"
-  checksum: 10c0/7f20d4f0cb314dbdcf86f392690b4323762fe0a57d3fe84a7878da8b9fa651d0d73e3bd7225f97bafb9077cb3627021c05cf9c14ddda507619c6c5940eed3e42
   languageName: node
   linkType: hard
 

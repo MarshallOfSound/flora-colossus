@@ -10,6 +10,6 @@
     "electron-packager": "^13.1.1",
     "galactus": "^0.2.1",
     "jimp": "^0.2.27",
-    "plist": "^2.0.1"
+    "plist": "^3.0.5"
   }
 }
