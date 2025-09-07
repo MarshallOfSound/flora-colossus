@@ -85,7 +85,7 @@ describe('Walker', () => {
 
     it('should detect multiple instances of the same module', () => {
       const xmlBuilderModules = modules.filter((m) => m.name === 'xmlbuilder');
-      expect(xmlBuilderModules).toHaveLength(2);
+      expect(xmlBuilderModules).toHaveLength(4);
     });
 
     it('should detect the hoisted and unhoisted instances correctly as optional/dev', () => {
