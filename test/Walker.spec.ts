@@ -80,7 +80,7 @@ describe('Walker', () => {
     const deepIdentifier = path.join('xml2js', 'node_modules', 'plist');
 
     beforeEach(async () => {
-      modules = await buildWalker(path.join(__dirname, 'fixtures', 'real', 'xml2js'));
+      modules = await buildWalker(path.join(__dirname, 'fixtures', 'yarn', 'xml2js'));
     });
 
     it('should detect multiple instances of the same module', () => {
