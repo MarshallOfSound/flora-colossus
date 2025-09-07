@@ -4,7 +4,7 @@
   "optionalDependencies": {
     "dbus-next": "0.6.1",
     "mpris-service": "2.1.0",
-    "xml2js": "^0.4.19"
+    "xml2js": "^0.5.0"
   },
   "devDependencies": {
     "electron-packager": "^13.1.1",
