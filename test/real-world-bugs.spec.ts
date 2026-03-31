@@ -57,16 +57,13 @@ describe('Real-world bug: sqlite3 + which (promotion does not propagate)', () =>
     expect(dep('which')).toHaveProperty('depType', DepType.PROD);
   });
 
-  it('should classify isexe as PROD — but it stays OPTIONAL (bug)', () => {
+  it('should propagate which promotion to isexe (PROD)', () => {
     // isexe is a prod dep of which, which is a prod dep of root.
-    // After which is promoted OPTIONAL→PROD, isexe should be re-evaluated
-    // as childDepType(PROD, PROD) = PROD. But the Walker returns early
-    // after promotion without re-walking children.
+    // After which is promoted OPTIONAL→PROD, its children are re-walked
+    // so isexe is also promoted to PROD.
     const isexe = dep('isexe');
     expect(isexe).toBeDefined();
-    expect(isexe).toHaveProperty('depType', DepType.OPTIONAL);
-    // Correct behavior would be:
-    // expect(isexe).toHaveProperty('depType', DepType.PROD);
+    expect(isexe).toHaveProperty('depType', DepType.PROD);
   });
 
   it('should leave other node-gyp transitive deps as OPTIONAL', () => {

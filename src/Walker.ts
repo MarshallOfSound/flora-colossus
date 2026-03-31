@@ -112,6 +112,10 @@ export class Walker {
           `existing module has a type of "${existingModule.depType}", new module type would be "${depType}" therefore updating`,
         );
         existingModule.depType = depType;
+        // Re-walk this module's dependencies with the promoted type so that
+        // transitive deps are also promoted (e.g. OPTIONAL -> PROD).
+        // walkHistory already contains this path so infinite loops are prevented.
+        await this.walkDependenciesForModuleChildren(modulePath, depType);
       }
       return;
     }
@@ -132,6 +136,13 @@ export class Walker {
       path: modulePath,
       name: pJ.name,
     });
+
+    await this.walkDependenciesForModuleChildren(modulePath, depType);
+  }
+
+  private async walkDependenciesForModuleChildren(modulePath: string, depType: DepType) {
+    const pJ = await this.loadPackageJSON(modulePath);
+    if (!pJ) return;
 
     // For every prod dep
     for (const moduleName in pJ.dependencies) {

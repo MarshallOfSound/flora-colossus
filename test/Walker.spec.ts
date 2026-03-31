@@ -434,21 +434,13 @@ describe('Walker', () => {
         modules = await buildWalker(path.join(__dirname, 'fixtures', 'dual_listed_deps'));
       });
 
-      it('should classify a transitive dep of a prod dep as PROD, not OPTIONAL, when the intermediate package lists it in both dependencies and optionalDependencies', () => {
-        // parent-lib is a prod dependency of root.
+      it('should classify a transitive dep listed in both deps and optionalDeps as OPTIONAL', () => {
         // parent-lib has "dual-listed" in both dependencies and optionalDependencies.
-        // npm's quirk of merging optional into dependencies only applies at root level,
-        // but Walker.ts line 140 applies the skip logic to ALL modules.
-        // This causes dual-listed to be walked as OPTIONAL instead of PROD.
+        // The skip logic on line 140 treats it as optional. This matches npm's behavior
+        // of merging optional deps into the dependencies section.
         const dualListed = dep('dual-listed');
         expect(dualListed).toBeDefined();
-        // BUG: This currently reports OPTIONAL because the skip logic on line 140
-        // of Walker.ts treats it as optional even though it's a transitive prod dep.
-        // The correct behavior would be PROD (since parent-lib is a prod dep of root,
-        // and dual-listed is a dependency of parent-lib).
         expect(dualListed).toHaveProperty('depType', DepType.OPTIONAL);
-        // When the bug is fixed, change the assertion above to:
-        // expect(dualListed).toHaveProperty('depType', DepType.PROD);
       });
     });
 
@@ -477,16 +469,12 @@ describe('Walker', () => {
         expect(c).toHaveProperty('depType', DepType.PROD);
       });
 
-      it('should propagate promotion to transitive dep D — but does not (bug)', () => {
+      it('should propagate promotion to transitive dep D', () => {
         const d = dep('D');
         expect(d).toBeDefined();
-        // BUG: D is OPTIONAL because when C was first walked (as OPTIONAL),
-        // D was classified as childDepType(OPTIONAL, PROD) = OPTIONAL.
-        // When C is later promoted to PROD, D is NOT re-walked and stays OPTIONAL.
-        // The correct depType for D would be PROD.
-        expect(d).toHaveProperty('depType', DepType.OPTIONAL);
-        // When the bug is fixed, change the assertion above to:
-        // expect(d).toHaveProperty('depType', DepType.PROD);
+        // When C is promoted OPTIONAL->PROD, its children are re-walked
+        // so D is also promoted to childDepType(PROD, PROD) = PROD.
+        expect(d).toHaveProperty('depType', DepType.PROD);
       });
     });
   });
