@@ -61,11 +61,11 @@ run_with_manager() {
       yarn test 2>&1 || exit_code=$?
       ;;
     npm)
-      npm install 2>&1
+      npm ci 2>&1
       npx vitest run 2>&1 || exit_code=$?
       ;;
     pnpm)
-      pnpm install --no-frozen-lockfile 2>&1
+      pnpm install --frozen-lockfile 2>&1
       pnpm vitest run 2>&1 || exit_code=$?
       ;;
   esac

@@ -60,11 +60,12 @@ jobs:
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: "${{ matrix.node-version }}"
+          cache: 'npm'
       - name: Remove packageManager field for npm compatibility
         shell: bash
         run: node -e "const p=require('./package.json'); delete p.packageManager; delete p.workspaces; require('fs').writeFileSync('package.json', JSON.stringify(p, null, 2) + '\n')"
       - name: Install dependencies
-        run: npm install
+        run: npm ci
       - name: Test
         run: npx vitest run
 
@@ -96,6 +97,6 @@ jobs:
         shell: bash
         run: node -e "const p=require('./package.json'); delete p.packageManager; delete p.workspaces; require('fs').writeFileSync('package.json', JSON.stringify(p, null, 2) + '\n')"
       - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
       - name: Test
         run: pnpm vitest run
