@@ -16,9 +16,7 @@ describe('Real-world bug: sqlite3 + which (promotion does not propagate)', () =>
   const dep = (name: string) => modules.find((m) => m.name === name);
 
   beforeAll(async () => {
-    const walker = new Walker(
-      path.join(__dirname, 'fixtures', 'promotion_no_propagate_real'),
-    );
+    const walker = new Walker(path.join(__dirname, 'fixtures', 'promotion_no_propagate_real'));
     modules = await walker.walkTree();
   });
 

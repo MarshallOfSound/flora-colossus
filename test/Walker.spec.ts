@@ -15,6 +15,12 @@ async function buildWalker(modulePath: string): Promise<Module[]> {
 // hoisted, so tests that walk the project's own node_modules will fail.
 const isPnpmLayout = existsSync(path.resolve(__dirname, '..', 'node_modules', '.pnpm'));
 
+// The yarn/xml2js fixture is populated by yarn workspaces. It won't have
+// node_modules when running under npm or pnpm.
+const hasXml2jsFixture = existsSync(
+  path.join(__dirname, 'fixtures', 'yarn', 'xml2js', 'node_modules', 'xml2js'),
+);
+
 describe('Walker', () => {
   let modules: Module[];
   const thisPackageDir = path.resolve(__dirname, '..');
@@ -83,7 +89,7 @@ describe('Walker', () => {
     });
   });
 
-  describe('conflicting optional and dev dependencies (xml2js)', () => {
+  describe.skipIf(!hasXml2jsFixture)('conflicting optional and dev dependencies (xml2js)', () => {
     const deepIdentifier = path.join('xml2js', 'node_modules', 'plist');
 
     beforeEach(async () => {
@@ -356,17 +362,13 @@ describe('Walker', () => {
 
       it('should follow npm hoisting rules correctly', () => {
         const hoistedDep = modules.find(
-          (m) =>
-            m.name === 'commonly-used' &&
-            !m.path.includes('node_modules/node_modules'),
+          (m) => m.name === 'commonly-used' && !m.path.includes('node_modules/node_modules'),
         );
         expect(hoistedDep).toBeDefined();
       });
 
       it('should handle nested node_modules for conflicting versions', () => {
-        const nestedDeps = modules.filter(
-          (m) => (m.path.match(/node_modules/g) || []).length > 1,
-        );
+        const nestedDeps = modules.filter((m) => (m.path.match(/node_modules/g) || []).length > 1);
         expect(nestedDeps.length).toBeGreaterThan(0);
       });
     });
