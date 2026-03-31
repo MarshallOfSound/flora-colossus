@@ -7,9 +7,9 @@
     "xml2js": "^0.5.0"
   },
   "devDependencies": {
-    "electron-packager": "^13.1.1",
+    "@electron/packager": "^18.3.5",
     "galactus": "^0.2.1",
     "jimp": "^0.2.27",
-    "plist": "^2.0.1"
+    "plist": "^3.1.0"
   }
 }
