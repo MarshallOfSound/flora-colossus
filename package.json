@@ -21,7 +21,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "prettier --check \"src/**/*.ts\" \"test/**/*.ts\"",
-    "lint:fix": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\""
+    "lint:fix": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "test:coverage": "vitest run --coverage",
+    "test:all-managers": "bash scripts/test-all-managers.sh"
   },
   "dependencies": {
     "debug": "^4.4.1"

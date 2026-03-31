@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs';
 import * as path from 'path';
 import { describe, it, beforeEach, expect } from 'vitest';
 
@@ -10,6 +11,16 @@ async function buildWalker(modulePath: string): Promise<Module[]> {
   return await walker.walkTree();
 }
 
+// pnpm uses a strict .pnpm virtual store layout where transitive deps are not
+// hoisted, so tests that walk the project's own node_modules will fail.
+const isPnpmLayout = existsSync(path.resolve(__dirname, '..', 'node_modules', '.pnpm'));
+
+// The yarn/xml2js fixture is populated by yarn workspaces. It won't have
+// node_modules when running under npm or pnpm.
+const hasXml2jsFixture = existsSync(
+  path.join(__dirname, 'fixtures', 'yarn', 'xml2js', 'node_modules', 'xml2js'),
+);
+
 describe('Walker', () => {
   let modules: Module[];
   const thisPackageDir = path.resolve(__dirname, '..');
@@ -20,7 +31,9 @@ describe('Walker', () => {
     expect(walker.getRootModule()).toBe(thisPackageDir);
   });
 
-  describe('depType', () => {
+  // These tests walk the project's own node_modules and rely on hoisted
+  // transitive dependencies, which is not compatible with pnpm's strict layout.
+  describe.skipIf(isPnpmLayout)('depType', () => {
     beforeEach(async () => {
       modules = await buildWalker(path.resolve(__dirname, '..'));
     });
@@ -76,7 +89,7 @@ describe('Walker', () => {
     });
   });
 
-  describe('conflicting optional and dev dependencies (xml2js)', () => {
+  describe.skipIf(!hasXml2jsFixture)('conflicting optional and dev dependencies (xml2js)', () => {
     const deepIdentifier = path.join('xml2js', 'node_modules', 'plist');
 
     beforeEach(async () => {
@@ -349,17 +362,13 @@ describe('Walker', () => {
 
       it('should follow npm hoisting rules correctly', () => {
         const hoistedDep = modules.find(
-          (m) =>
-            m.name === 'commonly-used' &&
-            !m.path.includes('node_modules/node_modules'),
+          (m) => m.name === 'commonly-used' && !m.path.includes('node_modules/node_modules'),
         );
         expect(hoistedDep).toBeDefined();
       });
 
       it('should handle nested node_modules for conflicting versions', () => {
-        const nestedDeps = modules.filter(
-          (m) => (m.path.match(/node_modules/g) || []).length > 1,
-        );
+        const nestedDeps = modules.filter((m) => (m.path.match(/node_modules/g) || []).length > 1);
         expect(nestedDeps.length).toBeGreaterThan(0);
       });
     });
@@ -419,6 +428,55 @@ describe('Walker', () => {
         // A package in both devDependencies and optionalDependencies at root is processed as optional
         // DEV_OPTIONAL is only for transitive optional deps of dev deps (ROOT -> dev -> optional)
         expect(dep('dev-optional-dep')).toHaveProperty('depType', DepType.OPTIONAL);
+      });
+    });
+
+    describe('dual-listed optional deps in non-root modules (bug)', () => {
+      beforeEach(async () => {
+        modules = await buildWalker(path.join(__dirname, 'fixtures', 'dual_listed_deps'));
+      });
+
+      it('should classify a transitive dep listed in both deps and optionalDeps as OPTIONAL', () => {
+        // parent-lib has "dual-listed" in both dependencies and optionalDependencies.
+        // The skip logic on line 140 treats it as optional. This matches npm's behavior
+        // of merging optional deps into the dependencies section.
+        const dualListed = dep('dual-listed');
+        expect(dualListed).toBeDefined();
+        expect(dualListed).toHaveProperty('depType', DepType.OPTIONAL);
+      });
+    });
+
+    describe('dep type promotion does not propagate to children (bug)', () => {
+      beforeEach(async () => {
+        modules = await buildWalker(path.join(__dirname, 'fixtures', 'promotion_no_propagate'));
+      });
+
+      // Fixture layout (npm-hoisted):
+      //   root deps: A (prod), C (prod)
+      //   A -> B (prod)
+      //   B -> C (optional)
+      //   C -> D (prod)
+      //
+      // Because "A" < "C" alphabetically, A is walked first in the prod loop.
+      // A -> B(prod) -> C(optional via childDepType(PROD,OPTIONAL)=OPTIONAL)
+      // C is first discovered as OPTIONAL, and D as childDepType(OPTIONAL,PROD)=OPTIONAL.
+      // Then root's prod loop reaches C directly. C is promoted OPTIONAL->PROD,
+      // but Walker returns early without re-walking C's children.
+      // D remains OPTIONAL when it should be PROD.
+
+      it('should promote C from OPTIONAL to PROD', () => {
+        const c = dep('C');
+        expect(c).toBeDefined();
+        // C gets promoted correctly because depTypeGreater(PROD, OPTIONAL) = true
+        expect(c).toHaveProperty('depType', DepType.PROD);
+      });
+
+      it('should propagate promotion to transitive dep D', () => {
+        const d = dep('D');
+        expect(d).toBeDefined();
+        // When C is promoted OPTIONAL->PROD, its children are re-walked
+        // so D is also promoted to childDepType(PROD, PROD) = PROD.
+        expect(d).toHaveProperty('depType', DepType.PROD);
       });
     });
   });
