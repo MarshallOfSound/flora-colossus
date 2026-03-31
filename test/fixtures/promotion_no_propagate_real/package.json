@@ -1,0 +1,8 @@
+{
+  "name": "promotion-no-propagate-real",
+  "version": "1.0.0",
+  "dependencies": {
+    "sqlite3": "5.1.7",
+    "which": "2.0.2"
+  }
+}
