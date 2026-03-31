@@ -451,5 +451,43 @@ describe('Walker', () => {
         // expect(dualListed).toHaveProperty('depType', DepType.PROD);
       });
     });
+
+    describe('dep type promotion does not propagate to children (bug)', () => {
+      beforeEach(async () => {
+        modules = await buildWalker(path.join(__dirname, 'fixtures', 'promotion_no_propagate'));
+      });
+
+      // Fixture layout (npm-hoisted):
+      //   root deps: A (prod), C (prod)
+      //   A -> B (prod)
+      //   B -> C (optional)
+      //   C -> D (prod)
+      //
+      // Because "A" < "C" alphabetically, A is walked first in the prod loop.
+      // A -> B(prod) -> C(optional via childDepType(PROD,OPTIONAL)=OPTIONAL)
+      // C is first discovered as OPTIONAL, and D as childDepType(OPTIONAL,PROD)=OPTIONAL.
+      // Then root's prod loop reaches C directly. C is promoted OPTIONAL->PROD,
+      // but Walker returns early without re-walking C's children.
+      // D remains OPTIONAL when it should be PROD.
+
+      it('should promote C from OPTIONAL to PROD', () => {
+        const c = dep('C');
+        expect(c).toBeDefined();
+        // C gets promoted correctly because depTypeGreater(PROD, OPTIONAL) = true
+        expect(c).toHaveProperty('depType', DepType.PROD);
+      });
+
+      it('should propagate promotion to transitive dep D — but does not (bug)', () => {
+        const d = dep('D');
+        expect(d).toBeDefined();
+        // BUG: D is OPTIONAL because when C was first walked (as OPTIONAL),
+        // D was classified as childDepType(OPTIONAL, PROD) = OPTIONAL.
+        // When C is later promoted to PROD, D is NOT re-walked and stays OPTIONAL.
+        // The correct depType for D would be PROD.
+        expect(d).toHaveProperty('depType', DepType.OPTIONAL);
+        // When the bug is fixed, change the assertion above to:
+        // expect(d).toHaveProperty('depType', DepType.PROD);
+      });
+    });
   });
 });

@@ -1,0 +1,8 @@
+{
+  "name": "promotion-no-propagate-root",
+  "version": "1.0.0",
+  "dependencies": {
+    "A": "1.0.0",
+    "C": "1.0.0"
+  }
+}
