@@ -1,0 +1,7 @@
+{
+  "name": "dual-listed-root",
+  "version": "1.0.0",
+  "dependencies": {
+    "parent-lib": "^1.0.0"
+  }
+}

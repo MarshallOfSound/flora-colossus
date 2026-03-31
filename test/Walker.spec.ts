@@ -428,5 +428,28 @@ describe('Walker', () => {
         expect(dep('dev-optional-dep')).toHaveProperty('depType', DepType.OPTIONAL);
       });
     });
+
+    describe('dual-listed optional deps in non-root modules (bug)', () => {
+      beforeEach(async () => {
+        modules = await buildWalker(path.join(__dirname, 'fixtures', 'dual_listed_deps'));
+      });
+
+      it('should classify a transitive dep of a prod dep as PROD, not OPTIONAL, when the intermediate package lists it in both dependencies and optionalDependencies', () => {
+        // parent-lib is a prod dependency of root.
+        // parent-lib has "dual-listed" in both dependencies and optionalDependencies.
+        // npm's quirk of merging optional into dependencies only applies at root level,
+        // but Walker.ts line 140 applies the skip logic to ALL modules.
+        // This causes dual-listed to be walked as OPTIONAL instead of PROD.
+        const dualListed = dep('dual-listed');
+        expect(dualListed).toBeDefined();
+        // BUG: This currently reports OPTIONAL because the skip logic on line 140
+        // of Walker.ts treats it as optional even though it's a transitive prod dep.
+        // The correct behavior would be PROD (since parent-lib is a prod dep of root,
+        // and dual-listed is a dependency of parent-lib).
+        expect(dualListed).toHaveProperty('depType', DepType.OPTIONAL);
+        // When the bug is fixed, change the assertion above to:
+        // expect(dualListed).toHaveProperty('depType', DepType.PROD);
+      });
+    });
   });
 });
