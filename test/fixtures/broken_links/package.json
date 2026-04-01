@@ -1,0 +1,9 @@
+{
+  "name": "test-broken-links",
+  "version": "1.0.0",
+  "dependencies": {
+    "broken-link": "1.0.0",
+    "valid-package": "1.0.0"
+  },
+  "devDependencies": {}
+}

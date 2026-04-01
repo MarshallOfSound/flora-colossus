@@ -1,0 +1,9 @@
+{
+  "name": "test-npm-link",
+  "version": "1.0.0",
+  "dependencies": {
+    "linked-package": "1.0.0",
+    "regular-dep": "1.0.0"
+  },
+  "devDependencies": {}
+}
